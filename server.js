@@ -1,13 +1,16 @@
-var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var port = 8080;
-// var book = require('./app/routes/book');
-var config = require('config'); //we load the db location from the JSON files
+'use strict';
+
+let express = require('express');
+let app = express();
+let mongoose = require('mongoose');
+let morgan = require('morgan');
+let bodyParser = require('body-parser');
+let port = process.env.PORT || 8080;
+let book = require('./app/routes/book');
+let config = require('config'); //we load the db location from the JSON files
+
 //db options
-var options = {
+let options = {
     server: {
         socketOptions: {
             keepAlive: 1,
@@ -24,8 +27,9 @@ var options = {
 
 //db connection      
 mongoose.connect(config.DBHost, options);
-var db = mongoose.connection;
+let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
+
 
 //don't show the log when it is test
 if (config.util.getEnv('NODE_ENV') !== 'test') {
@@ -43,19 +47,21 @@ app.use(bodyParser.json({
     type: 'application/json'
 }));
 
+
 app.get("/", (req, res) => res.json({
     message: "Welcome to our Bookstore!"
 }));
 
-/*app.route("/book")
+app.route("/book")
     .get(book.getBooks)
     .post(book.postBook);
+    
 app.route("/book/:id")
     .get(book.getBook)
     .delete(book.deleteBook)
-    .put(book.updateBook);*/
+    .put(book.updateBook);
 
 app.listen(port);
-console.log("Listening on port " + port);
+console.log("Application started on port: " + port);
 
 module.exports = app;
